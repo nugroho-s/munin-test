@@ -169,10 +169,12 @@ void do_the_things(int socket){
 		bzero(buffer,512);
 		bzero(tulis, 100); 
 		n = read(socket,buffer,511);
+		printf("%s\n",buffer);
 		cmd = strtok(buffer," ");
 		if (n < 0) error("ERROR reading from socket");
 		//printf("%s\n",buffer);
 		if (strcmp(cmd,"cap\n")==0){
+			printf("cap multigraph dirtyconfig\n");
 			send_msg("cap multigraph dirtyconfig\n",socket);
 		} else if (strcmp(cmd,"nodes\n")==0){
 			gethostname(hostname, 512);
@@ -204,7 +206,7 @@ void do_the_things(int socket){
 				send_msg("memory\n",socket);
 			}
 		} else if (strcmp(cmd,"version\n")==0){
-			sprintf(tulis,"aaa node on %s version: 8.48\n",temp_host_name);
+			sprintf(tulis,"test node on %s version: 8.48\n",temp_host_name);
 			send_msg(tulis,socket);
 		} else if (strcmp(cmd,"fetch") == 0){
 			cmd = strtok(NULL," ");
@@ -212,6 +214,7 @@ void do_the_things(int socket){
 				get_mem();
 				sprintf(tulis,"used.value %sfree.value %s",mem_used,mem_free);
 				send_msg(tulis,socket);
+				send_msg(".\n",socket);
 			}
 		} else if (strcmp(buffer,"config")==0){
 			cmd = strtok(NULL," ");
@@ -232,7 +235,7 @@ void do_the_things(int socket){
 				send_msg("free.info Free memory.\n", socket);
 				send_msg(".\n",socket);
 			}
-		} else if (strncmp(cmd,"quit\n",5)!=0) {
+		} else if ((strncmp(cmd,"quit",4)!=0)||((strncmp(cmd,"quit\n",5)!=0))) {
 			send_msg("# Unknown command. Try cap, list, nodes, config, fetch, version or quit\n",socket);
 		}
 		if (n < 0) error("ERROR writing to socket");
