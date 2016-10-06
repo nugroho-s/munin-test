@@ -235,9 +235,9 @@ void do_the_things(int socket){
 				send_msg("free.info Free memory.\n", socket);
 				send_msg(".\n",socket);
 			}
-		} else if ((strncmp(cmd,"quit",4)!=0)||((strncmp(cmd,"quit\n",5)!=0))) {
+		} else if (!((strcmp(cmd,"quit")!=0)||((strncmp(cmd,"quit\n",5)!=0)))) {
 			send_msg("# Unknown command. Try cap, list, nodes, config, fetch, version or quit\n",socket);
 		}
 		if (n < 0) error("ERROR writing to socket");
-	} while (strncmp(cmd,"quit\n", 5)!=0);
+	} while ((strncmp(cmd,"quit\n", 5)!=0)||(strcmp(cmd,"quit")));
 }
