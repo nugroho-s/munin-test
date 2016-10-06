@@ -59,15 +59,13 @@ int main(int argc, char *argv[])
 	socklen_t clilen;
 	struct sockaddr_in serv_addr, cli_addr;
 	int n;
-	if (argc < 2) {
-		fprintf(stderr,"ERROR, no port provided\n");
-		exit(1);
-	}
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0) 
 		error("ERROR opening socket");
 	bzero((char *) &serv_addr, sizeof(serv_addr));
-	portno = atoi(argv[1]);
+	portno = 4949;
+	if (argc >= 2)
+		portno = atoi(argv[1]);
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_addr.s_addr = INADDR_ANY;
 	serv_addr.sin_port = htons(portno);
@@ -89,9 +87,7 @@ int main(int argc, char *argv[])
 			exit(0);
 		} else {
 			close(newsockfd);
-			j_fork--;
 		}
-		j_fork++;
 	} while (1);
 	
 	return 0; 
@@ -172,9 +168,7 @@ void do_the_things(int socket){
 		printf("%s\n",buffer);
 		cmd = strtok(buffer," ");
 		if (n < 0) error("ERROR reading from socket");
-		//printf("%s\n",buffer);
 		if (strcmp(cmd,"cap\n")==0){
-			printf("cap multigraph dirtyconfig\n");
 			send_msg("cap multigraph dirtyconfig\n",socket);
 		} else if (strcmp(cmd,"nodes\n")==0){
 			gethostname(hostname, 512);
@@ -235,9 +229,9 @@ void do_the_things(int socket){
 				send_msg("free.info Free memory.\n", socket);
 				send_msg(".\n",socket);
 			}
-		} else if (!((strcmp(cmd,"quit")!=0)||((strncmp(cmd,"quit\n",5)!=0)))) {
+		} else if ((strcmp(cmd,"quit")!=0)&&((strncmp(cmd,"quit\n",5)!=0))) {
 			send_msg("# Unknown command. Try cap, list, nodes, config, fetch, version or quit\n",socket);
 		}
 		if (n < 0) error("ERROR writing to socket");
-	} while ((strncmp(cmd,"quit\n", 5)!=0)||(strcmp(cmd,"quit")));
+	} while ((strncmp(cmd,"quit\n", 5)!=0)&&(strcmp(cmd,"quit")!=0));
 }
